@@ -1,0 +1,76 @@
+{
+  "name": "@skax/drag-scroll",
+  "version": "1.0.3",
+  "description": "picker component for js framework, support mobile and pc",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development rollup --config rollup.config.mjs --watch",
+    "build": "pnpm run clean && cross-env NODE_ENV=production rollup --config rollup.config.mjs",
+    "docs": "rimraf docs && typedoc --out docs src/index.ts",
+    "clean": "rimraf dist docs temp",
+    "lint": "eslint --fix \"./src/*.{ts,tsx,js,jsx,mjs}\"",
+    "fmt": "prettier --write \"./**/*.{ts,tsx,js,jsx,html,scss}\""
+  },
+  "keywords": [],
+  "author": "ShineShao <xiaoshaoqq@gmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-eslint": "^9.0.5",
+    "@rollup/plugin-node-resolve": "^15.3.1",
+    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-strip": "^3.0.4",
+    "@rollup/plugin-swc": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@skax/camel": "^0.2.6",
+    "@swc/core": "^1.11.29",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.38.0",
+    "eslint-config-xx": "2.0.0-beta.1",
+    "prettier": "^3.6.2",
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^7.0.7",
+    "dayjs": "^1.11.13",
+    "postcss": "^8.5.3",
+    "rollup": "^4.41.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-dts": "^6.2.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-serve": "^2.0.3",
+    "sass": "^1.89.0",
+    "typescript": "5.3.3"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "browserslist": {
+    "development": [
+      "last 1 version"
+    ],
+    "production": [
+      "> 1%",
+      "not dead"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freeshineit/datepicker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/freeshineit/datepicker/issues"
+  },
+  "homepage": "https://github.com/freeshineit/datepicker#readme"
+}
