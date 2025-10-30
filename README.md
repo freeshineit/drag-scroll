@@ -36,7 +36,7 @@ const scroll = new DragScroll(document.querySelector('.container'), {
 });
 ```
 
-#### html
+#### html umd
 
 ```html
 <!-- node_modules/@skax/drag-scroll/dist/style/css.css -->
@@ -64,3 +64,5 @@ const scroll = new DragScroll(document.querySelector('.container'), {
   });
 </script>
 ```
+
+[demo](./public/index.html)
