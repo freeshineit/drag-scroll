@@ -1,3 +1,6 @@
+/**
+ * 拖拽滚动参数
+ */
 export interface DragScrollOptions {
   /** 容器宽度, 默认 100% */
   width?: number | string;
@@ -11,15 +14,31 @@ export interface DragScrollOptions {
   onDragEnd?: () => void;
   onDrag?: (clientY: number) => void;
 }
-
+/**
+ * 默认参数
+ */
 const _DRAG_SCROLL_DEFAULT_OPTIONS: DragScrollOptions = {
   content: '',
   width: '100%',
   height: '400px',
 };
 
+/**
+ * 前缀类名
+ */
 const _DRAG_SCROLL_PREFIX_CLASS = 'drag-scroll';
 
+/**
+ * 拖拽滚动
+ * @class DragScroll
+ * @example
+ * const container = document.getElementById('scrollContainer');
+ * const dragScroll = new DragScroll(container, {
+ *   width: '300px',
+ *   height: '500px',
+ *   content: '<div>...</div>',
+ * });
+ */
 class DragScroll {
   $container: HTMLElement;
   $content: HTMLElement;
