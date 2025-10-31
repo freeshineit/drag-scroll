@@ -44,6 +44,7 @@ const _$DRAG_SCROLL_PREFIX_CLASSNAME$_ = 'drag-scroll';
 /**
  * 拖拽滚动
  * @class DragScroll
+ * @author 三空 <xiaoshaoqq@gmail.com>
  * @example
  * ```ts
  * const container = document.getElementById('scrollContainer');
