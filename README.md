@@ -15,6 +15,14 @@ pnpm run build
 
 ### Usage
 
+```bash
+npm install @skax/drag-scroll
+
+yarn add @skax/drag-scroll
+
+pnpm add @skax/drag-scroll
+```
+
 ```ts
 import '@skax/drag-scroll/dist/style/css.css';
 import DragScroll from '@skax/drag-scroll';

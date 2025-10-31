@@ -92,9 +92,15 @@ devDependencies:
   typedoc:
     specifier: ^0.28.14
     version: 0.28.14(typescript@5.3.3)
+  typedoc-plugin-mdn-links:
+    specifier: ^5.0.10
+    version: 5.0.10(typedoc@0.28.14)
   typedoc-plugin-rename-defaults:
     specifier: ^0.7.3
     version: 0.7.3(typedoc@0.28.14)
+  typedoc-plugin-replace-text:
+    specifier: ^4.2.0
+    version: 4.2.0(typedoc@0.28.14)
   typescript:
     specifier: 5.3.3
     version: 5.3.3
@@ -6381,12 +6387,28 @@ packages:
       reflect.getprototypeof: 1.0.10
     dev: true
 
+  /typedoc-plugin-mdn-links@5.0.10(typedoc@0.28.14):
+    resolution: {integrity: sha512-TOMj1+fyhqhdJaMwfkw7ANz+0KHjRVUnE/SorPW83wghElmsMxxCZhDSBgF2hRB9+qsf/qIjDw65RDay94E2Wg==}
+    peerDependencies:
+      typedoc: 0.27.x || 0.28.x
+    dependencies:
+      typedoc: 0.28.14(typescript@5.3.3)
+    dev: true
+
   /typedoc-plugin-rename-defaults@0.7.3(typedoc@0.28.14):
     resolution: {integrity: sha512-fDtrWZ9NcDfdGdlL865GW7uIGQXlthPscURPOhDkKUe4DBQSRRFUf33fhWw41FLlsz8ZTeSxzvvuNmh54MynFA==}
     peerDependencies:
       typedoc: '>=0.22.x <0.29.x'
     dependencies:
       camelcase: 8.0.0
+      typedoc: 0.28.14(typescript@5.3.3)
+    dev: true
+
+  /typedoc-plugin-replace-text@4.2.0(typedoc@0.28.14):
+    resolution: {integrity: sha512-vmhpFKg75l0CfHO7n3bdf/wwSWH6hQQxaZTqZ5HDe5Xd40tkk6jkVkP6SWhDhntSIflREQqwneflGJG3bCqPEA==}
+    peerDependencies:
+      typedoc: 0.26.x || 0.27.x || 0.28.x
+    dependencies:
       typedoc: 0.28.14(typescript@5.3.3)
     dev: true
 
