@@ -1,3 +1,6 @@
+/**
+ * 拖拽滚动参数
+ */
 export interface DragScrollOptions {
   /** 容器宽度, 默认 100% */
   width?: number | string;
@@ -6,20 +9,51 @@ export interface DragScrollOptions {
   /**
    * 滚动内容, 默认空字符串
    */
-  content: string | (() => string);
-  onDragStart?: () => void;
-  onDragEnd?: () => void;
-  onDrag?: (clientY: number) => void;
+  content?: string | (() => string);
+  /**
+   * 拖拽开始回调
+   * @param e MouseEvent | TouchEvent - 触发拖拽开始的事件对象
+   */
+  onDragStart?: (e: MouseEvent | TouchEvent) => void;
+  /**
+   * 拖拽结束回调
+   * @param e MouseEvent | TouchEvent - 触发拖拽开始的事件对象
+   */
+  onDragEnd?: (e: MouseEvent | TouchEvent) => void;
+  /**
+   * 拖拽过程中回调
+   * @param x number - 当前鼠标或触摸拖拽过程的 X 坐标
+   * @param y number - 当前鼠标或触摸拖拽过程的 Y 坐标
+   */
+  onDragging?: (x: number, y: number) => void;
 }
-
-const _DRAG_SCROLL_DEFAULT_OPTIONS: DragScrollOptions = {
+/**
+ * 默认参数
+ */
+const _$DRAG_SCROLL_DEFAULT_OPTIONS$_: DragScrollOptions = {
   content: '',
   width: '100%',
   height: '400px',
 };
 
-const _DRAG_SCROLL_PREFIX_CLASS = 'drag-scroll';
+/**
+ * 前缀类名
+ */
+const _$DRAG_SCROLL_PREFIX_CLASSNAME$_ = 'drag-scroll';
 
+/**
+ * 拖拽滚动
+ * @class DragScroll
+ * @example
+ * ```ts
+ * const container = document.getElementById('scrollContainer');
+ * const dragScroll = new DragScroll(container, {
+ *   width: '300px',
+ *   height: '500px',
+ *   content: '<div>...</div>',
+ * });
+ * ```
+ */
 class DragScroll {
   $container: HTMLElement;
   $content: HTMLElement;
@@ -45,12 +79,12 @@ class DragScroll {
 
   constructor(container: HTMLElement, options: Partial<DragScrollOptions> = {}) {
     this.$container = container;
-    this.options = Object.assign({}, _DRAG_SCROLL_DEFAULT_OPTIONS, options) as Required<DragScrollOptions>;
+    this.options = Object.assign({}, _$DRAG_SCROLL_DEFAULT_OPTIONS$_, options) as Required<DragScrollOptions>;
 
-    this.$container.classList.add(_DRAG_SCROLL_PREFIX_CLASS, `${_DRAG_SCROLL_PREFIX_CLASS}-container`);
+    this.$container.classList.add(_$DRAG_SCROLL_PREFIX_CLASSNAME$_, `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-container`);
 
     this.$content = document.createElement('div');
-    this.$content.classList.add(`${_DRAG_SCROLL_PREFIX_CLASS}-content`);
+    this.$content.classList.add(`${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-content`);
     this.innerHtml(this.options.content);
     this.$container.appendChild(this.$content);
 
@@ -78,9 +112,38 @@ class DragScroll {
   }
 
   /**
+   * 获取容器宽度
+   * @example
+   * ```ts
+   * const width = dragScroll.width;
+   * ```
+   * @return {number}
+   */
+  get width() {
+    return this.$container.clientWidth;
+  }
+
+  /**
+   * 获取容器高度
+   * @example
+   * ```ts
+   * const height = dragScroll.height;
+   * ```
+   * @return {number}
+   */
+  get height() {
+    return this.$container.clientHeight;
+  }
+
+  /**
    * 设置容器尺寸
    * @param width 容器宽度
    * @param height 容器高度
+   * @example
+   * ```ts
+   * dragScroll.resize(500, '400px');
+   * dragScroll.resize('80%', '600px');
+   * ```
    */
   resize(width?: number | string, height?: number | string) {
     let css = ``;
@@ -100,12 +163,23 @@ class DragScroll {
   /**
    * 设置 HTML 内容
    * @param html HTML 字符串或返回 HTML 字符串的函数
+   * @example
+   * ```ts
+   * dragScroll.innerHtml('<div>New Content</div>');
+   * dragScroll.innerHtml(() => '<div>Dynamic Content</div>');
+   * ```
    */
   innerHtml(html: string | (() => string)) {
     this.$content.innerHTML = typeof html === 'function' ? html() : html;
   }
 
-  // 销毁方法，用于清理资源
+  /**
+   * 销毁方法，用于清理资源
+   * @example
+   * ```ts
+   * dragScroll.destroy();
+   * ```
+   */
   destroy() {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
@@ -123,7 +197,7 @@ class DragScroll {
   // ---------------------------------------------------------------------- //
   // 私有方法
   // ---------------------------------------------------------------------- //
-
+  // 初始化
   private _init() {
     this._addEventListeners();
 

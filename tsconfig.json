@@ -2,17 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "ES2015",
-    "lib": [
-      "ES5",
-      "ES6",
-      "dom",
-      "ES2015",
-      "ES2016",
-      "ES2017",
-      "dom.iterable",
-      "es2015.collection",
-      "esnext"
-    ],
+    "lib": ["ES5", "ES6", "dom", "ES2015", "ES2016", "ES2017", "dom.iterable", "es2015.collection", "esnext"],
     "allowJs": true,
     "jsx": "react-jsx",
     "outDir": "dist",
@@ -30,20 +20,7 @@
     "baseUrl": ".",
     "rootDir": "."
   },
-  "include": [
-    "__tests__",
-    "eslint.config.js",
-    ".prettier.js",
-    "commitlint.config.js"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage",
-    "docs",
-    "example",
-    "site/**/*.{vue}",
-    "site/with-vue3/src/main.ts"
-  ],
+  "include": ["__tests__", "eslint.config.js", ".prettier.js", "commitlint.config.js", "src"],
+  "exclude": ["node_modules", "dist", "coverage", "docs", "example", "site/**/*.{vue}", "site/with-vue3/src/main.ts", "dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
