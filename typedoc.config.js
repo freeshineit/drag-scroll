@@ -8,6 +8,8 @@ export default {
   disableSources: false,
   tsconfig: 'tsconfig.json',
   readme: 'README.md',
+  githubPages: true,
+  gitRemote: 'origin',
   highlightLanguages: ['typescript', 'javascript', 'css', 'html', 'json', 'scss', 'jsx', 'tsx', 'bash'],
   replaceText: {
     inCodeCommentText: true,
@@ -19,5 +21,9 @@ export default {
       //   replace: '',
       // },
     ],
+  },
+  navigationLinks: {
+    Examples: 'https://github.com/freeshineit/drag-scroll/tree/main/examples',
+    Github: 'https://github.com/freeshineit/drag-scroll',
   },
 };

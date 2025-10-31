@@ -71,10 +71,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/freeshineit/datepicker.git"
+    "url": "git+https://github.com/freeshineit/drag-scroll.git"
   },
   "bugs": {
-    "url": "https://github.com/freeshineit/datepicker/issues"
+    "url": "https://github.com/freeshineit/drag-scroll/issues"
   },
-  "homepage": "https://github.com/freeshineit/datepicker#readme"
+  "homepage": "https://github.com/freeshineit/drag-scroll#readme"
 }
