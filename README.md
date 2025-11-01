@@ -76,3 +76,7 @@ const scroll = new DragScroll(document.querySelector('.container'), {
 ```
 
 [demo](./public/index.html)
+
+## Documentation
+
+## API
