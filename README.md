@@ -11,15 +11,18 @@ pnpm run dev
 
 # 构建生产
 pnpm run build
+
+# 文档
+pnpm run docs
 ```
 
 ### Usage
 
 ```bash
 npm install @skax/drag-scroll
-
+# or
 yarn add @skax/drag-scroll
-
+# or
 pnpm add @skax/drag-scroll
 ```
 
@@ -58,7 +61,7 @@ const scroll = new DragScroll(document.querySelector('.container'), {
   const scroll = new DragScroll(document.querySelector('.container'), {
     height: 100,
     content: `
-            <div class="list">
+        <div class="list">
             <div class="item" style="height: 100px">1</div>
             <div class="item" style="height: 100px">2</div>
             <div class="item" style="height: 100px">3</div>
@@ -67,8 +70,7 @@ const scroll = new DragScroll(document.querySelector('.container'), {
             <div class="item" style="height: 100px">6</div>
             <div class="item" style="height: 100px">7</div>
             <div class="item" style="height: 100px">8</div>
-            </div>
-        `,
+        </div>`,
   });
 </script>
 ```

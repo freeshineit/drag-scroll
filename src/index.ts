@@ -1,4 +1,16 @@
 /**
+ * 拖拽滚动状态
+ */
+export interface DragScrollState {
+  /** 当前平移 X 位置 */
+  x: number;
+  /** 当前平移 Y 位置 */
+  y: number;
+  /** 当前滚动速度 */
+  velocity: number;
+}
+
+/**
  * 拖拽滚动参数
  */
 export interface DragScrollOptions {
@@ -6,10 +18,17 @@ export interface DragScrollOptions {
   width?: number | string;
   /** 容器高度, 默认 400px */
   height?: number | string;
-  /**
-   * 滚动内容, 默认空字符串
-   */
+  /** 滚动内容, 默认空字符串 */
   content?: string | (() => string);
+  /** 是否只读，默认 false */
+  readonly?: boolean;
+  /** 隐藏滚动条，默认 false */
+  hideScrollbar?: boolean;
+  /**
+   * 滚动状态改变回调
+   * @param state DragScrollState - 当前滚动状态
+   */
+  onChange?: (state: DragScrollState) => void;
   /**
    * 拖拽开始回调
    * @param e MouseEvent | TouchEvent - 触发拖拽开始的事件对象
@@ -32,8 +51,9 @@ export interface DragScrollOptions {
  */
 const _$DRAG_SCROLL_DEFAULT_OPTIONS$_: DragScrollOptions = {
   content: '',
-  width: '100%',
   height: '400px',
+  readonly: false,
+  hideScrollbar: false,
 };
 
 /**
@@ -55,58 +75,68 @@ const _$DRAG_SCROLL_PREFIX_CLASSNAME$_ = 'drag-scroll';
  * ```
  */
 class DragScroll {
+  /** 容器元素 classname drag-scroll-container */
   $container: HTMLElement;
+  /** 内容容器元素 classname drag-scroll-content */
   $content: HTMLElement;
+  /** 配置项 */
   options: Required<DragScrollOptions>;
+  /** 是否正在拖拽 */
   isDragging: boolean;
-  startY: number;
+  /** 当前平移 Y 位置 */
   currentY: number;
+  /** 滚动速度 */
   velocity: number;
-  animationId!: number;
-  lastTimestamp!: number;
-  spring: number;
-  friction: number;
-  bounceDamping: number;
-  maxVelocity: number;
 
   // private
+  /** 起始 Y 位置 */
+  private _startY: number;
   private _indicatorTimeout: number | null = null;
-  private _$scrollbar: HTMLElement | null;
-  private _$scrollbarThumb: HTMLElement | null;
-  private _$scrollIndicator: HTMLElement | null;
-  private _$positionInfo: HTMLElement | null;
-  private _$velocityInfo: HTMLElement | null;
+  /** 滚动条元素 */
+  private _$scrollbar: HTMLElement | null = null;
+  /** 滚动条指示器元素 */
+  private _$scrollbarThumb: HTMLElement | null = null;
+  /** 是否只读 */
+  private _readonly = false;
+  /** 上一帧时间戳 */
+  private _lastTimestamp!: number;
+  /** 滚动动画 ID */
+  private _animationId!: number;
+  /** 边界反弹阻尼 */
+  private _bounceDamping: number;
+  /** 弹性系数, 默认 0.25 */
+  private _spring: number;
+  /** 摩擦力, 默认 0.92 */
+  private _friction: number;
+  /** 最大速度限制, 默认 30 */
+  private _maxVelocity: number;
 
   constructor(container: HTMLElement, options: Partial<DragScrollOptions> = {}) {
     this.$container = container;
     this.options = Object.assign({}, _$DRAG_SCROLL_DEFAULT_OPTIONS$_, options) as Required<DragScrollOptions>;
-
     this.$container.classList.add(_$DRAG_SCROLL_PREFIX_CLASSNAME$_, `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-container`);
-
+    this.readonly = this.options.readonly;
     this.$content = document.createElement('div');
     this.$content.classList.add(`${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-content`);
     this.innerHtml(this.options.content);
     this.$container.appendChild(this.$content);
 
     this.isDragging = false;
-    this.startY = 0;
+    this._startY = 0;
     this.currentY = 0;
     this.velocity = 0;
-    this.animationId = null!;
-    this.lastTimestamp = 0;
+    this._animationId = null!;
+    this._lastTimestamp = 0;
 
     // 物理参数
-    this.spring = 0.25; // 弹性系数
-    this.friction = 0.92; // 摩擦力
-    this.bounceDamping = 0.6; // 边界反弹阻尼
-    this.maxVelocity = 30; // 最大速度限制
+    this._spring = 0.25; // 弹性系数
+    this._friction = 0.92; // 摩擦力
+    this._bounceDamping = 0.6; // 边界反弹阻尼
+    this._maxVelocity = 30; // 最大速度限制
 
-    // DOM 元素
-    this._$scrollbar = document.getElementById('scrollbar');
-    this._$scrollbarThumb = document.getElementById('scrollbarThumb');
-    this._$scrollIndicator = document.getElementById('scrollIndicator');
-    this._$positionInfo = document.getElementById('positionInfo');
-    this._$velocityInfo = document.getElementById('velocityInfo');
+    if (!this.options.hideScrollbar) {
+      this._renderScrollbar();
+    }
 
     this._init();
   }
@@ -136,6 +166,28 @@ class DragScroll {
   }
 
   /**
+   * 只读属性
+   */
+  get readonly() {
+    return this._readonly;
+  }
+
+  set readonly(value: boolean) {
+    if (this._readonly !== value) {
+      this.$container.style.cursor = value ? 'not-allowed' : 'grab';
+      this._readonly = value;
+    }
+  }
+
+  /**
+   * 内容是否可滚动
+   */
+  get canDrag() {
+    const clientHeight = this.$content.clientHeight;
+    return !this.readonly && clientHeight > this.$container.clientHeight;
+  }
+
+  /**
    * 设置容器尺寸
    * @param width 容器宽度
    * @param height 容器高度
@@ -147,17 +199,20 @@ class DragScroll {
    */
   resize(width?: number | string, height?: number | string) {
     let css = ``;
-    if (typeof width === 'number') {
+    if (/^\d+(\.\d+)?$/.test(width + '')) {
       css = `width: ${width}px;`;
     } else if (typeof width === 'string') {
       css = `width: ${width};`;
     }
-    if (typeof height === 'number') {
+    if (/^\d+(\.\d+)?$/.test(height + '')) {
       css += `height: ${height}px;`;
     } else if (typeof height === 'string') {
       css += `height: ${height};`;
     }
     this.$container.style.cssText += css;
+
+    this._applyTransform();
+    this._updateScrollbar();
   }
 
   /**
@@ -171,6 +226,23 @@ class DragScroll {
    */
   innerHtml(html: string | (() => string)) {
     this.$content.innerHTML = typeof html === 'function' ? html() : html;
+    this._applyTransform();
+    this._updateScrollbar();
+  }
+
+  /**
+   * Y轴滚动到指定位置
+   * @param y Y轴平移值 （正值不支持负值）
+   */
+  scrollToY(y: number) {
+    const maxScroll = this.$content.scrollHeight - this.$container.clientHeight;
+    // 边界检查
+    if (y < 0 || y > maxScroll) return;
+    this.currentY = y;
+    this.velocity = 0;
+    this._applyTransform();
+    this._updateScrollbar();
+    this._updateStats();
   }
 
   /**
@@ -178,12 +250,13 @@ class DragScroll {
    * @example
    * ```ts
    * dragScroll.destroy();
+   * dragScroll = null;
    * ```
    */
   destroy() {
-    if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
-      this.animationId = null!;
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null!;
     }
 
     if (this._indicatorTimeout) {
@@ -197,18 +270,24 @@ class DragScroll {
   // ---------------------------------------------------------------------- //
   // 私有方法
   // ---------------------------------------------------------------------- //
+
+  private _renderScrollbar() {
+    this._$scrollbar = document.createElement('div');
+    this._$scrollbar.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-scrollbar`;
+    this._$scrollbarThumb = document.createElement('div');
+    this._$scrollbarThumb.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-scrollbar-thumb`;
+    this._$scrollbar.appendChild(this._$scrollbarThumb);
+    this.$container.appendChild(this._$scrollbar);
+  }
+
   // 初始化
   private _init() {
+    this.resize(this.options.width, this.options.height);
     this._addEventListeners();
-
     // 初始化滚动条
-    this.updateScrollbar();
-
-    // 初始化控制按钮
-    this.setupControls();
-
+    this._updateScrollbar();
     // 初始化动画
-    this.animate();
+    this._animate();
   }
 
   //  ----------- 事件处理 -----------  //
@@ -247,6 +326,7 @@ class DragScroll {
    * @param e 鼠标事件
    */
   private _onMouseDown(e: MouseEvent) {
+    if (!this.canDrag) return;
     this._startDrag(e.clientY);
   }
 
@@ -255,6 +335,7 @@ class DragScroll {
    * @param e 触摸事件
    */
   private _onTouchStart(e: TouchEvent) {
+    if (!this.canDrag) return;
     if (e.touches.length === 1) {
       this._startDrag(e.touches[0].clientY);
       e.preventDefault();
@@ -266,14 +347,11 @@ class DragScroll {
    * @param clientY 鼠标或触摸的 Y 坐标
    */
   private _startDrag(clientY: number) {
+    if (!this.canDrag) return;
     this.isDragging = true;
-    this.startY = clientY;
+    this._startY = clientY;
     this.velocity = 0;
-
-    // 显示拖动指示器和滚动条
-    this.showIndicator();
-    this._$scrollbar?.classList.add('drag-scroll-show');
-
+    this._$scrollbar?.classList.add(`${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-show`);
     // 更新光标样式
     this.$container.style.cursor = 'grabbing';
   }
@@ -283,6 +361,7 @@ class DragScroll {
    * @param e 鼠标事件
    */
   private _onMouseMove(e: MouseEvent) {
+    if (!this.canDrag) return;
     if (!this.isDragging) return;
     this._drag(e.clientY);
   }
@@ -292,6 +371,7 @@ class DragScroll {
    * @param e 触摸事件
    */
   private _onTouchMove(e: TouchEvent) {
+    if (!this.canDrag) return;
     if (!this.isDragging || e.touches.length !== 1) return;
     this._drag(e.touches[0].clientY);
     e.preventDefault();
@@ -302,8 +382,9 @@ class DragScroll {
    * @param clientY 鼠标或触摸的 Y 坐标
    */
   private _drag(clientY: number) {
-    const deltaY = this.startY - clientY;
-    this.startY = clientY;
+    if (!this.canDrag) return;
+    const deltaY = this._startY - clientY;
+    this._startY = clientY;
 
     // 更新位置
     this.currentY += deltaY;
@@ -312,17 +393,18 @@ class DragScroll {
     this.velocity = deltaY;
 
     // 限制速度
-    this.velocity = Math.max(Math.min(this.velocity, this.maxVelocity), -this.maxVelocity);
+    this.velocity = Math.max(Math.min(this.velocity, this._maxVelocity), -this._maxVelocity);
 
-    this.applyTransform();
-    this.updateScrollbar();
-    this.updateStats();
+    this._applyTransform();
+    this._updateScrollbar();
+    this._updateStats();
   }
 
   /**
    * 鼠标释放
    */
   private _onMouseUp() {
+    if (!this.canDrag) return;
     this._endDrag();
   }
 
@@ -330,6 +412,7 @@ class DragScroll {
    * 触摸结束
    */
   private _onTouchEnd() {
+    if (!this.canDrag) return;
     this._endDrag();
   }
 
@@ -337,47 +420,61 @@ class DragScroll {
    * 结束拖动
    */
   private _endDrag() {
+    if (!this.canDrag) return;
     if (!this.isDragging) return;
     this.isDragging = false;
-
     // 恢复光标样式
     this.$container.style.cursor = 'grab';
-
-    // 隐藏指示器
-    this.hideIndicator();
-
     // 延迟隐藏滚动条
     setTimeout(() => {
       if (!this.isDragging) this._$scrollbar?.classList.remove('drag-scroll-show');
     }, 1500);
   }
 
-  applyTransform() {
-    const maxScroll = this.$content.scrollHeight - this.$container.clientHeight;
+  /**
+   * 平移内容
+   */
+  private _applyTransform() {
+    const clientHeight = this.$content.clientHeight;
+    // 内容高度小于等于容器高度时，不进行滚动
+    if (clientHeight <= this.$container.clientHeight) {
+      this.$content.style.transform = `translate3d(0, 0, 0)`;
+      return;
+    }
 
+    const maxScroll = this.$content.scrollHeight - this.$container.clientHeight;
     // 边界检查与弹性效果
     if (this.currentY < 0) {
       // 超出顶部边界
-      this.currentY = this.currentY * this.bounceDamping;
-      this.velocity *= this.bounceDamping;
+      this.currentY = this.currentY * this._bounceDamping;
+      this.velocity *= this._bounceDamping;
     } else if (this.currentY > maxScroll) {
       // 超出底部边界
-      this.currentY = maxScroll + (this.currentY - maxScroll) * this.bounceDamping;
-      this.velocity *= this.bounceDamping;
+      this.currentY = maxScroll + (this.currentY - maxScroll) * this._bounceDamping;
+      this.velocity *= this._bounceDamping;
     }
-
     // 应用 transform
     this.$content.style.transform = `translate3d(0, ${-this.currentY}px, 0)`;
   }
 
-  animate(timestamp = 0) {
-    if (!this.lastTimestamp) this.lastTimestamp = timestamp;
-    const deltaTime = Math.min(timestamp - this.lastTimestamp, 100) / 16; // 限制最大时间增量
-    this.lastTimestamp = timestamp as number;
+  /**
+   * 动画
+   * @param timestamp 时间戳
+   */
+  private _animate(timestamp = 0) {
+    const clientHeight = this.$content.clientHeight;
+    // 内容高度小于等于容器高度时，不进行滚动
+    if (clientHeight <= this.$container.clientHeight) {
+      return;
+    }
+
+    if (!this._lastTimestamp) this._lastTimestamp = timestamp;
+    const deltaTime = Math.min(timestamp - this._lastTimestamp, 100) / 16; // 限制最大时间增量
+    this._lastTimestamp = timestamp as number;
 
     if (!this.isDragging) {
       // 惯性滚动
-      this.velocity *= this.friction;
+      this.velocity *= this._friction;
       this.currentY += this.velocity;
 
       // 弹性回弹
@@ -385,15 +482,15 @@ class DragScroll {
 
       if (this.currentY < 0) {
         // 顶部弹性
-        this.velocity -= this.currentY * this.spring * deltaTime;
+        this.velocity -= this.currentY * this._spring * deltaTime;
       } else if (this.currentY > maxScroll) {
         // 底部弹性
-        this.velocity -= (this.currentY - maxScroll) * this.spring * deltaTime;
+        this.velocity -= (this.currentY - maxScroll) * this._spring * deltaTime;
       }
 
-      this.applyTransform();
-      this.updateScrollbar();
-      this.updateStats();
+      this._applyTransform();
+      this._updateScrollbar();
+      this._updateStats();
 
       // 当速度足够小时停止动画
       if (Math.abs(this.velocity) < 0.1 && this.currentY >= 0 && this.currentY <= maxScroll) {
@@ -401,10 +498,13 @@ class DragScroll {
       }
     }
 
-    this.animationId = requestAnimationFrame(this.animate.bind(this));
+    this._animationId = requestAnimationFrame(this._animate.bind(this));
   }
 
-  updateScrollbar() {
+  /**
+   * 更新滚动条
+   */
+  private _updateScrollbar() {
     const containerHeight = this.$container.clientHeight;
     const contentHeight = this.$content.scrollHeight;
     const maxScroll = contentHeight - containerHeight;
@@ -424,67 +524,14 @@ class DragScroll {
     }
   }
 
-  updateStats() {
-    if (this._$positionInfo) {
-      this._$positionInfo.textContent = `位置: ${Math.round(this.currentY)}px`;
-    }
-
-    if (this._$velocityInfo) {
-      this._$velocityInfo.textContent = `速度: ${this.velocity.toFixed(1)}px/帧`;
-    }
-  }
-
-  showIndicator() {
-    this._$scrollIndicator?.classList.add('show');
-    if (this._indicatorTimeout) {
-      clearTimeout(this._indicatorTimeout);
-    }
-    // 3秒后自动隐藏
-    this._indicatorTimeout = setTimeout(() => {
-      this.hideIndicator();
-    }, 3000) as unknown as number;
-  }
-
-  hideIndicator() {
-    this._$scrollIndicator?.classList.remove('show');
-  }
-
-  resetPosition() {
-    this.currentY = 0;
-    this.velocity = 0;
-    this.applyTransform();
-    this.updateScrollbar();
-    this.updateStats();
-  }
-
-  scrollToTop() {
-    this.currentY = 0;
-    this.velocity = 0;
-    this.applyTransform();
-    this.updateScrollbar();
-    this.updateStats();
-  }
-
-  scrollToBottom() {
-    const maxScroll = this.$content.scrollHeight - this.$container.clientHeight;
-    this.currentY = maxScroll;
-    this.velocity = 0;
-    this.applyTransform();
-    this.updateScrollbar();
-    this.updateStats();
-  }
-
-  setupControls() {
-    document.getElementById('resetBtn')?.addEventListener('click', () => {
-      this.resetPosition();
-    });
-
-    document.getElementById('toTopBtn')?.addEventListener('click', () => {
-      this.scrollToTop();
-    });
-
-    document.getElementById('toBottomBtn')?.addEventListener('click', () => {
-      this.scrollToBottom();
+  /**
+   * 更新统计信息
+   */
+  private _updateStats() {
+    this.options.onChange?.({
+      x: 0,
+      y: this.currentY,
+      velocity: +this.velocity.toFixed(1),
     });
   }
 }

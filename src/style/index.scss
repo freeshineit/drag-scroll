@@ -11,9 +11,11 @@ $drag-scroll-prefix: 'drag-scroll';
     overflow: hidden;
     position: relative;
     cursor: grab;
-    border-radius: 10px;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
   }
 
   &-content {
@@ -51,6 +53,7 @@ $drag-scroll-prefix: 'drag-scroll';
   &-scrollbar-thumb {
     position: absolute;
     width: 100%;
+    box-sizing: border-box;
     background: linear-gradient(to bottom, #4a90e2, #357abd);
     border-radius: 3px;
     transition: height 0.2s;
