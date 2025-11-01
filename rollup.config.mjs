@@ -33,11 +33,15 @@ const isDev = process.env.NODE_ENV !== 'production';
  */
 function generateConfig(pkg, configs) {
   // prettier-ignore
-  const banner = `/*
-* ${pkg.name} v${pkg.version}
-* Copyright (c) ${dayjs().format("YYYY-MM-DD")} ${pkg.author}
-* Released under the MIT License.
-*/`;
+  const banner = `/**
+ * drag scroll support move and touch
+ *
+ * ${pkg.name} v${pkg.version}
+ * Copyright (c) ${dayjs().format("YYYY-MM-DD")} ${pkg.author}
+ * 
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */`;
 
   const input = 'src/index.ts';
   const cssInput = 'src/style/css.ts'; // 这个路径是约定路径，请勿随意修改
