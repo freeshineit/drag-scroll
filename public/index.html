@@ -62,27 +62,6 @@
         font-size: 14px;
       }
 
-      .scroll-indicator {
-        position: absolute;
-        bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 14px;
-        opacity: 0;
-        transition:
-          opacity 0.3s,
-          transform 0.3s;
-        backdrop-filter: blur(5px);
-      }
-      .scroll-indicator.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(-5px);
-      }
-
       .controls {
         display: flex;
         justify-content: center;
@@ -122,13 +101,10 @@
       <h1>Transform 拖动滚动与弹性效果</h1>
       <div class="description">使用 CSS transform 和 translate3d 实现，支持 GPU 加速，提供更流畅的滚动体验</div>
       <div id="scrollContainer"></div>
-      <div class="scroll-indicator" id="scrollIndicator">拖动滚动</div>
-
       <div class="stats">
         <span id="positionInfo">位置: 0px</span> |
         <span id="velocityInfo">速度: 0px/帧</span>
       </div>
-
       <div class="controls">
         <button class="control-btn" id="resetBtn">重置位置</button>
         <button class="control-btn" id="toTopBtn">滚动到顶部</button>
@@ -155,7 +131,7 @@
                   <h3>项目 1</h3>
                   <p>这是第一个项目的内容。使用 transform: translate3d 实现平移，可以获得更好的性能。</p>
                 </div>
-                <div class="item">
+                <div class="item" id="item_11">
                   <h3>项目 2</h3>
                   <p>这是第二个项目的内容。GPU 加速使滚动更加流畅，特别是在移动设备上。</p>
                 </div>
@@ -208,6 +184,15 @@
         const container = document.getElementById('scrollContainer');
         dragScroll = new DragScroll(container, {
           content: html,
+          onDragStart: e => {
+            console.log('拖拽开始', e);
+          },
+          onDragging: (x, y) => {
+            console.log('拖拽中', x, y);
+          },
+          onDragEnd: e => {
+            console.log('拖拽结束', e);
+          },
           onChange: state => {
             document.getElementById('positionInfo').textContent = `位置 X: ${Math.round(state.x)}px, Y: ${Math.round(state.y)}px`;
             document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(2)}px/帧`;
