@@ -407,6 +407,9 @@ class DragScroll {
    */
   private _onMouseUp(e: PointerEvent) {
     if (!this.canDrag) return;
+    if (!this.isDragging) return;
+    this.isDragging = false;
+
     this._endDrag();
     this.options.onDragEnd?.(e);
   }
@@ -415,9 +418,6 @@ class DragScroll {
    * 结束拖动
    */
   private _endDrag() {
-    if (!this.canDrag) return;
-    if (!this.isDragging) return;
-    this.isDragging = false;
     // 恢复光标样式
     this.$container.style.cursor = 'grab';
     // 延迟隐藏滚动条
