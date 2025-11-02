@@ -115,7 +115,6 @@ class DragScroll {
     this.$container = container;
     this.options = Object.assign({}, _$DRAG_SCROLL_DEFAULT_OPTIONS$_, options) as Required<DragScrollOptions>;
     this.$container.classList.add(_$DRAG_SCROLL_PREFIX_CLASSNAME$_, `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-container`);
-    this.readonly = this.options.readonly;
     this.$content = document.createElement('div');
     this.$content.classList.add(`${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-content`);
     this.innerHtml(this.options.content);
@@ -142,6 +141,8 @@ class DragScroll {
     this._onTouchMove = this._onTouchMove.bind(this);
     this._onMouseMove = this._onMouseMove.bind(this);
     this._onMouseUp = this._onMouseUp.bind(this);
+
+    this.readonly = this.options.readonly;
 
     this._init();
   }
@@ -181,6 +182,11 @@ class DragScroll {
     if (this._readonly !== value) {
       this.$container.style.cursor = value ? 'not-allowed' : 'grab';
       this._readonly = value;
+    }
+    this.$container.removeEventListener('touchmove', this._onTouchMove);
+    if (!value) {
+      // 当非只读时，添加 touchmove 事件监听， 阻止透传到body默认滚动行为
+      this.$container.addEventListener('touchmove', this._onTouchMove, { passive: false }); //
     }
   }
 
@@ -243,14 +249,14 @@ class DragScroll {
    * dragScroll.scrollToY(-2); // 无效
    * ```
    */
-  scrollToY(y: number) {
+  scrollToY(y: number, triggerChange = true) {
     const maxScroll = this.$content.scrollHeight - this.$container.clientHeight;
     // 边界检查
     if (y < 0 || y > maxScroll) return;
     this.currentY = y;
     this.velocity = 0;
     this._applyTransform();
-    this._updateState();
+    if (triggerChange) this._updateState();
   }
 
   /**
@@ -311,20 +317,20 @@ class DragScroll {
    */
   private _addEventListeners() {
     // 添加事件监听器
-    this.$container.addEventListener('pointerdown', this._onMouseDown, { passive: false });
-    this.$container.addEventListener('touchmove', this._onTouchMove, { passive: false }); // 阻止透传到body默认滚动行为
+    this.$container.addEventListener('pointerdown', this._onMouseDown);
     document.addEventListener('pointermove', this._onMouseMove);
-    document.addEventListener('pointerup', this._onMouseUp);
-    document.addEventListener('pointercancel', this._onMouseUp);
+    // 务必同时监听 pointerup 和 pointercancel，都要做收尾和状态清理，否则会出现“拖动卡死”问题
+    document.addEventListener('pointerup', this._onMouseUp); // 指针正常抬起时
+    document.addEventListener('pointercancel', this._onMouseUp); // 指针操作被系统/外部原因打断时
   }
 
   /**
    * 移除事件监听器
    */
   private _removeEventListeners() {
+    this.$container.removeEventListener('touchmove', this._onTouchMove);
     // 移除事件监听器
     this.$container.removeEventListener('pointerdown', this._onMouseDown);
-    this.$container.removeEventListener('touchmove', this._onTouchMove);
     document.removeEventListener('pointermove', this._onMouseMove);
     document.removeEventListener('pointerup', this._onMouseUp);
     document.removeEventListener('pointercancel', this._onMouseUp);
@@ -367,7 +373,7 @@ class DragScroll {
    * @param e 鼠标事件
    */
   private _onMouseMove(e: MouseEvent) {
-    e.preventDefault();
+    // e.preventDefault();
     if (!this.canDrag) return;
     if (!this.isDragging) return;
     this._drag(e.clientY);
