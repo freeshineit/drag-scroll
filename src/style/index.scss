@@ -36,8 +36,8 @@ $drag-scroll-prefix: 'drag-scroll';
   &-scrollbar {
     position: absolute;
     right: 0px;
-    top: 10px;
-    bottom: 10px;
+    top: 0px;
+    bottom: 0px;
     width: 6px;
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 3px;
