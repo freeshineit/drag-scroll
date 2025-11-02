@@ -16,6 +16,7 @@ $drag-scroll-prefix: 'drag-scroll';
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   &-content {
