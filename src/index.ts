@@ -408,8 +408,7 @@ class DragScroll {
   private _onMouseUp(e: PointerEvent) {
     if (!this.canDrag) return;
     if (!this.isDragging) return;
-    this.isDragging = false;
-
+    this.isDragging = false; // 停止拖动, 放置在最后
     this._endDrag();
     this.options.onDragEnd?.(e);
   }
