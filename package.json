@@ -1,6 +1,6 @@
 {
   "name": "@skax/drag-scroll",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0",
   "description": "picker component for js framework, support mobile and pc",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
