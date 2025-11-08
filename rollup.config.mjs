@@ -2,7 +2,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import swc from '@rollup/plugin-swc';
 import serve from 'rollup-plugin-serve';
-import { upperCamel } from '@skax/camel';
 import { dts } from 'rollup-plugin-dts';
 import eslint from '@rollup/plugin-eslint';
 import strip from '@rollup/plugin-strip';
@@ -48,9 +47,6 @@ function generateConfig(pkg, configs) {
 
   const externals = Object.keys(pkg?.dependencies || {});
 
-  // const exportName = upperCamel(pkg?.name?.split('/').length > 1 ? pkg?.name?.split('/')[1] : pkg?.name);
-  // console.log('exportName:', exportName);
-
   const hasUmd = fs.existsSync('src/main.ts'); // 是否存在 UMD 入口文件
   const hasStyle = fs.existsSync(cssInput); // 是否存在样式入口文件
 
@@ -75,7 +71,8 @@ function generateConfig(pkg, configs) {
         {
           file: 'dist/index.js',
           format: 'cjs',
-          exports: 'named',
+          // https://www.rollupjs.com/configuration-options/#output-exports
+          // exports: 'named',
           sourcemap: isDev,
           banner,
         },
@@ -100,7 +97,8 @@ function generateConfig(pkg, configs) {
             {
               file: 'dist/style/css.js',
               format: 'cjs',
-              exports: 'named',
+              // https://www.rollupjs.com/configuration-options/#output-exports
+              // exports: 'named',
               sourcemap: isDev,
               banner,
             },
@@ -124,7 +122,7 @@ function generateConfig(pkg, configs) {
           // https://swc.rs/docs/configuration/swcrc
           swc: {
             jsc: {
-              target: 'es2015',
+              target: 'es5',
             },
           },
           include: ['./src/**/*.{ts,js,mjs,tsx,jsx}'],
