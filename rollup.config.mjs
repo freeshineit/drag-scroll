@@ -71,6 +71,7 @@ function generateConfig(pkg, configs) {
         {
           file: 'dist/index.js',
           format: 'cjs',
+          // https://www.rollupjs.com/configuration-options/#output-exports
           // exports: 'named',
           sourcemap: isDev,
           banner,
@@ -96,6 +97,7 @@ function generateConfig(pkg, configs) {
             {
               file: 'dist/style/css.js',
               format: 'cjs',
+              // https://www.rollupjs.com/configuration-options/#output-exports
               // exports: 'named',
               sourcemap: isDev,
               banner,
