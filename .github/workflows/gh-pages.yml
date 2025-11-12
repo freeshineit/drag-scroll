@@ -41,6 +41,12 @@ jobs:
       - run: pnpm install
       - run: pnpm run build
 
+      - name: Copy static files to docs
+      - run: |
+          cp dist/index.umd.js docs/media/index.umd.js
+          mkdir -p docs/media/style
+          cp dist/style/css.css docs/media/style/css.css
+
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
