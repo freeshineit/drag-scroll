@@ -41,11 +41,15 @@ jobs:
       - run: pnpm install
       - run: pnpm run build
 
-      - name: Copy static files to docs
-      - run: |
-          cp dist/index.umd.js docs/media/index.umd.js
-          mkdir -p docs/media/style
-          cp dist/style/css.css docs/media/style/css.css
+      # - name: Copy static files to docs
+      - name: Ensure target directory exists
+        run: mkdir -p docs/media/style
+
+      - name: Copy JS to docs
+        run: cp dist/index.umd.js docs/media/index.umd.js
+
+      - name: Copy CSS to docs
+        run: cp dist/style/css.css docs/media/style/css.css
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
