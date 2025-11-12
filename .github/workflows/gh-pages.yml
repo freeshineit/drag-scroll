@@ -1,22 +1,49 @@
-name: github pages
+# name: github pages
 
+# on:
+#   push:
+#     branches:
+#       - main # default branch
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: pnpm/action-setup@v3
+#         with:
+#           version: 8
+#       - run: pnpm install
+#       - run: pnpm run build
+#       - name: Deploy
+#         uses: peaceiris/actions-gh-pages@v4
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_dir: ./docs
 on:
   push:
-    branches:
-      - main # default branch
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v3
         with:
           version: 8
       - run: pnpm install
       - run: pnpm run build
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
+
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          branch: gh-pages
+          folder: ./docs
+          token: ${{ secrets.GITHUB_TOKEN }}
