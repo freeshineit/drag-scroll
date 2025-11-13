@@ -2,7 +2,7 @@
  * drag scroll support move and touch
  *
  * @skax/drag-scroll v1.1.0
- * Copyright (c) 2025-11-12 ShineShao <xiaoshaoqq@gmail.com>
+ * Copyright (c) 2025-11-13 ShineShao <xiaoshaoqq@gmail.com>
  * 
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
