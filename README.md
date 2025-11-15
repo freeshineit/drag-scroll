@@ -1,5 +1,7 @@
 ## DragScroll
 
+![build](https://github.com/freeshineit/drag-scroll/workflows/build/badge.svg) ![Download](https://img.shields.io/npm/dm/@skax/drag-scroll.svg) ![Version](https://img.shields.io/npm/v/@skax/drag-scroll.svg) ![License](https://img.shields.io/npm/l/@skax/drag-scroll.svg)
+
 ### scripts
 
 ```bash
