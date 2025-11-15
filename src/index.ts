@@ -51,6 +51,7 @@ export interface DragScrollOptions {
  */
 const _$DRAG_SCROLL_DEFAULT_OPTIONS$_: DragScrollOptions = {
   content: '',
+  width: '100%',
   height: '400px',
   readonly: false,
   hideScrollbar: false,
@@ -112,6 +113,13 @@ class DragScroll {
   private _maxVelocity: number;
 
   constructor(container: HTMLElement, options: Partial<DragScrollOptions> = {}) {
+    if (!container) {
+      throw new Error('container is required');
+    }
+    if (['VIDEO', 'CANVAS', 'IMG', 'TEXTAREA', 'INPUT'].includes(container.tagName)) {
+      throw new Error(`container cannot be 'VIDEO', 'CANVAS', 'IMG', 'TEXTAREA', 'INPUT' element`);
+    }
+
     this.$container = container;
     this.options = Object.assign({}, _$DRAG_SCROLL_DEFAULT_OPTIONS$_, options) as Required<DragScrollOptions>;
     this.$container.classList.add(_$DRAG_SCROLL_PREFIX_CLASSNAME$_, `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-container`);
@@ -194,8 +202,8 @@ class DragScroll {
    * 内容是否可滚动
    */
   get canDrag() {
-    const clientHeight = this.$content.clientHeight;
-    return !this.readonly && clientHeight > this.$container.clientHeight;
+    const offsetHeight = this.$content.offsetHeight;
+    return !this.readonly && offsetHeight > this.$container.clientHeight;
   }
 
   /**
@@ -278,6 +286,8 @@ class DragScroll {
       this._indicatorTimeout = null;
     }
 
+    if (this.$container) this.$container.style.cursor = 'default';
+
     this._$scrollbarThumb?.remove();
     this._$scrollbarThumb = null;
     this._$scrollbar?.remove();
@@ -308,7 +318,7 @@ class DragScroll {
     // 初始化滚动条
     this._updateScrollbar();
     // 初始化动画
-    this._animate();
+    this._animationId = requestAnimationFrame(this._animate.bind(this));
   }
 
   //  ----------- 事件处理 -----------  //
@@ -429,9 +439,9 @@ class DragScroll {
    * 平移内容
    */
   private _applyTransform() {
-    const clientHeight = this.$content.clientHeight;
+    const offsetHeight = this.$content.offsetHeight;
     // 内容高度小于等于容器高度时，不进行滚动
-    if (clientHeight <= this.$container.clientHeight) {
+    if (offsetHeight <= this.$container.clientHeight) {
       this.$content.style.transform = `translate3d(0, 0, 0)`;
       return;
     }
@@ -457,7 +467,12 @@ class DragScroll {
    * @param timestamp 时间戳
    */
   private _animate(timestamp = 0) {
-    const clientHeight = this.$content.clientHeight;
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null!;
+    }
+
+    const clientHeight = this.$content.offsetHeight;
     // 内容高度小于等于容器高度时，不进行滚动
     if (clientHeight <= this.$container.clientHeight) {
       return;
@@ -491,8 +506,6 @@ class DragScroll {
         this.velocity = 0;
       }
     }
-
-    this._animationId = requestAnimationFrame(this._animate.bind(this));
   }
 
   /**
