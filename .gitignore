@@ -21,8 +21,6 @@ rollup.config-*.cjs
 
 build/
 coverage/
-*.svg
-*.png
-*.jpeg
+
 
 
