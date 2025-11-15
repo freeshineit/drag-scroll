@@ -1,7 +1,7 @@
 /**
  * drag scroll support move and touch
  *
- * @skax/drag-scroll v1.1.0
+ * @skax/drag-scroll v1.1.1
  * Copyright (c) 2025-11-15 ShineShao <xiaoshaoqq@gmail.com>
  * 
  * This source code is licensed under the MIT license found in the
@@ -32,6 +32,7 @@
    * 默认参数
    */ var _$DRAG_SCROLL_DEFAULT_OPTIONS$_ = {
       content: '',
+      width: '100%',
       height: '400px',
       readonly: false,
       hideScrollbar: false
@@ -58,6 +59,18 @@
           /** 滚动条元素 */ this._$scrollbar = null;
           /** 滚动条指示器元素 */ this._$scrollbarThumb = null;
           /** 是否只读 */ this._readonly = false;
+          if (!container) {
+              throw new Error('container is required');
+          }
+          if ([
+              'VIDEO',
+              'CANVAS',
+              'IMG',
+              'TEXTAREA',
+              'INPUT'
+          ].includes(container.tagName)) {
+              throw new Error("container cannot be 'VIDEO', 'CANVAS', 'IMG', 'TEXTAREA', 'INPUT' element");
+          }
           this.$container = container;
           this.options = Object.assign({}, _$DRAG_SCROLL_DEFAULT_OPTIONS$_, options);
           this.$container.classList.add(_$DRAG_SCROLL_PREFIX_CLASSNAME$_, "" + _$DRAG_SCROLL_PREFIX_CLASSNAME$_ + "-container");
@@ -159,6 +172,7 @@
               clearTimeout(this._indicatorTimeout);
               this._indicatorTimeout = null;
           }
+          if (this.$container) this.$container.style.cursor = 'default';
           (_this__$scrollbarThumb = this._$scrollbarThumb) == null ? void 0 : _this__$scrollbarThumb.remove();
           this._$scrollbarThumb = null;
           (_this__$scrollbar = this._$scrollbar) == null ? void 0 : _this__$scrollbar.remove();
@@ -185,7 +199,7 @@
           // 初始化滚动条
           this._updateScrollbar();
           // 初始化动画
-          this._animate();
+          this._animationId = requestAnimationFrame(this._animate.bind(this));
       };
       //  ----------- 事件处理 -----------  //
       /**
@@ -285,9 +299,9 @@
       /**
      * 平移内容
      */ _proto._applyTransform = function _applyTransform() {
-          var clientHeight = this.$content.clientHeight;
+          var offsetHeight = this.$content.offsetHeight;
           // 内容高度小于等于容器高度时，不进行滚动
-          if (clientHeight <= this.$container.clientHeight) {
+          if (offsetHeight <= this.$container.clientHeight) {
               this.$content.style.transform = "translate3d(0, 0, 0)";
               return;
           }
@@ -311,7 +325,11 @@
      * @param timestamp 时间戳
      */ _proto._animate = function _animate(timestamp) {
           if (timestamp === void 0) timestamp = 0;
-          var clientHeight = this.$content.clientHeight;
+          if (this._animationId) {
+              cancelAnimationFrame(this._animationId);
+              this._animationId = null;
+          }
+          var clientHeight = this.$content.offsetHeight;
           // 内容高度小于等于容器高度时，不进行滚动
           if (clientHeight <= this.$container.clientHeight) {
               return;
@@ -339,7 +357,6 @@
                   this.velocity = 0;
               }
           }
-          this._animationId = requestAnimationFrame(this._animate.bind(this));
       };
       /**
      * 更新滚动条
@@ -421,8 +438,8 @@
               get: /**
      * 内容是否可滚动
      */ function get() {
-                  var clientHeight = this.$content.clientHeight;
-                  return !this.readonly && clientHeight > this.$container.clientHeight;
+                  var offsetHeight = this.$content.offsetHeight;
+                  return !this.readonly && offsetHeight > this.$container.clientHeight;
               }
           }
       ]);
