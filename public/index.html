@@ -129,6 +129,9 @@
         <input type="text" id="height" value="400px" />
         <button class="control-btn" id="resizeBtn">resize</button>
       </div>
+      <div>
+        <button class="control-btn" id="destroy">销毁</button>
+      </div>
     </div>
     <script src="./index.umd.js"></script>
     <script>
@@ -218,6 +221,9 @@
         document.getElementById('toBottomBtn').addEventListener('click', () => {
           const maxScroll = dragScroll.$content.scrollHeight - dragScroll.$container.clientHeight;
           if (dragScroll) dragScroll.scrollToY(maxScroll);
+        });
+        document.getElementById('destroy').addEventListener('click', () => {
+          if (dragScroll) dragScroll.destroy();
         });
         document.getElementById('innerHtmlBtn').addEventListener('click', () => {
           const content = document.getElementById('content').value;
