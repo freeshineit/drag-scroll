@@ -1,8 +1,8 @@
 /**
  * drag scroll support move and touch
  *
- * @skax/drag-scroll v1.1.1
- * Copyright (c) 2025-11-15 ShineShao <xiaoshaoqq@gmail.com>
+ * @skax/drag-scroll v1.1.2
+ * Copyright (c) 2025-11-22 ShineShao <xiaoshaoqq@gmail.com>
  * 
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -198,8 +198,8 @@
           this._addEventListeners();
           // 初始化滚动条
           this._updateScrollbar();
-          // 初始化动画
-          this._animationId = requestAnimationFrame(this._animate.bind(this));
+      // 弹性动画
+      // this._animationId = requestAnimationFrame(this._animate.bind(this));
       };
       //  ----------- 事件处理 -----------  //
       /**
