@@ -317,8 +317,8 @@ class DragScroll {
     this._addEventListeners();
     // 初始化滚动条
     this._updateScrollbar();
-    // 初始化动画
-    this._animationId = requestAnimationFrame(this._animate.bind(this));
+    // 弹性动画
+    // this._animationId = requestAnimationFrame(this._animate.bind(this));
   }
 
   //  ----------- 事件处理 -----------  //
