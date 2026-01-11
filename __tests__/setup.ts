@@ -1,16 +1,16 @@
 // Jest 测试环境设置文件
 
 // 模拟 requestAnimationFrame 和 cancelAnimationFrame
-global.requestAnimationFrame = (callback: FrameRequestCallback): number => {
+globalThis.requestAnimationFrame = (callback: FrameRequestCallback): number => {
   return setTimeout(callback, 0) as unknown as number;
 };
 
-global.cancelAnimationFrame = (id: number): void => {
+globalThis.cancelAnimationFrame = (id: number): void => {
   clearTimeout(id);
 };
 
 // 模拟 PointerEvent（jsdom 不支持 PointerEvent）
-if (typeof global.PointerEvent === 'undefined') {
+if (typeof globalThis.PointerEvent === 'undefined') {
   class PointerEvent extends MouseEvent {
     public pointerId: number;
     public width: number;
@@ -37,7 +37,7 @@ if (typeof global.PointerEvent === 'undefined') {
       this.isPrimary = params.isPrimary || false;
     }
   }
-  global.PointerEvent = PointerEvent as any;
+  globalThis.PointerEvent = PointerEvent as any;
 }
 
 // 设置测试超时时间
