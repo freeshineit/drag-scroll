@@ -11,6 +11,15 @@ pnpm install
 # 开发运行
 pnpm run dev
 
+# 运行所有测试
+pnpm test
+
+# 监听模式（开发时使用）
+pnpm test:watch
+
+# 生成覆盖率报告
+pnpm test:coverage
+
 # 构建生产
 pnpm run build
 
