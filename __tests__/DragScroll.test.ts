@@ -177,7 +177,7 @@ describe('DragScroll', () => {
       // 设置容器和内容尺寸
       Object.defineProperty(container, 'clientHeight', { value: 400, writable: true });
       Object.defineProperty(dragScroll.$content, 'scrollHeight', { value: 1000, writable: true });
-      
+
       dragScroll.scrollToY(100);
       expect(onChange).toHaveBeenCalled();
     });
@@ -202,7 +202,7 @@ describe('DragScroll', () => {
         onDragEnd,
         onDragging,
       });
-      
+
       // 设置容器和内容尺寸以支持拖拽
       Object.defineProperty(container, 'clientHeight', { value: 400, writable: true });
       Object.defineProperty(dragScroll.$content, 'offsetHeight', { value: 1000, writable: true });
@@ -309,7 +309,7 @@ describe('DragScroll', () => {
       dragScroll = new DragScroll(container, {
         hideScrollbar: false,
       });
-      const scrollbar = container.querySelector('.drag-scroll-scrollbar');
+      const scrollbar = container.querySelector('.drag-scroll-bar');
       expect(scrollbar).not.toBeNull();
     });
 
@@ -317,7 +317,7 @@ describe('DragScroll', () => {
       dragScroll = new DragScroll(container, {
         hideScrollbar: true,
       });
-      const scrollbar = container.querySelector('.drag-scroll-scrollbar');
+      const scrollbar = container.querySelector('.drag-scroll-bar');
       expect(scrollbar).toBeNull();
     });
   });
