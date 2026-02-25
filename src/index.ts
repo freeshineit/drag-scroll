@@ -114,7 +114,7 @@ class DragScroll {
 
   constructor(container: HTMLElement, options: Partial<DragScrollOptions> = {}) {
     if (!container) {
-      throw new Error('container is required');
+      throw new Error('container is required!');
     }
     if (['VIDEO', 'CANVAS', 'IMG', 'TEXTAREA', 'INPUT'].includes(container.tagName)) {
       throw new Error(`container cannot be 'VIDEO', 'CANVAS', 'IMG', 'TEXTAREA', 'INPUT' element`);
@@ -304,9 +304,9 @@ class DragScroll {
 
   private _renderScrollbar() {
     this._$scrollbar = document.createElement('div');
-    this._$scrollbar.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-scrollbar`;
+    this._$scrollbar.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-bar`;
     this._$scrollbarThumb = document.createElement('div');
-    this._$scrollbarThumb.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-scrollbar-thumb`;
+    this._$scrollbarThumb.className = `${_$DRAG_SCROLL_PREFIX_CLASSNAME$_}-bar-thumb`;
     this._$scrollbar.appendChild(this._$scrollbarThumb);
     this.$container.appendChild(this._$scrollbar);
   }
