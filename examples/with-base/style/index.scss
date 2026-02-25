@@ -1,0 +1,67 @@
+$drag-scroll-prefix: 'drag-scroll';
+
+:root {
+  --drag-scroll-bar-background-color: rgba(0, 0, 0, 0.1);
+  --drag-scroll-bar-thumb-background-color: linear-gradient(to bottom, #4a90e2, #357abd);
+}
+
+.#{$drag-scroll-prefix} {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  &-container {
+    width: 100%;
+    height: 450px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &-content {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  // scrollbar
+  &-bar {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: 6px;
+    background-color: var(--drag-scroll-bar-background-color, rgba(0, 0, 0, 0.1));
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-sizing: border-box;
+  }
+
+  &-bar.#{$drag-scroll-prefix}-show {
+    opacity: 1;
+  }
+
+  &-bar-thumb {
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--drag-scroll-bar-thumb-background-color, linear-gradient(to bottom, #4a90e2, #357abd));
+    border-radius: 3px;
+    transition: height 0.2s;
+  }
+}
