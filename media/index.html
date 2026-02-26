@@ -3,242 +3,579 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transform 拖动滚动与弹性效果</title>
+    <title>DragScroll - 拖拽滚动组件演示</title>
     <style>
+      :root {
+        --primary: #4a90e2;
+        --primary-hover: #357abd;
+        --bg: #f5f7fa;
+        --card-bg: #ffffff;
+        --text: #2c3e50;
+        --text-secondary: #6b7c93;
+        --border: #e3e8ef;
+        --radius: 10px;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+
       * {
         margin: 0;
         padding: 0;
-      }
-
-      .container {
-        width: 100%;
-        height: 200vh;
-        padding: 25px;
         box-sizing: border-box;
       }
 
-      h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #333;
-        font-size: 28px;
-        font-weight: 600;
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
       }
 
-      .description {
+      /* ---- Header ---- */
+      .header {
         text-align: center;
-        margin-bottom: 25px;
-        color: #666;
-        font-size: 16px;
-        line-height: 1.5;
+        padding: 40px 20px 24px;
+      }
+
+      .header h1 {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        font-size: 15px;
+        max-width: 540px;
+        margin: 0 auto;
+      }
+
+      /* ---- Layout ---- */
+      .playground {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      @media (max-width: 768px) {
+        .playground {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ---- Scroll Area ---- */
+      .scroll-area {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+
+      #scrollContainer {
+        border-radius: 8px;
+        border: 1px solid var(--border);
       }
 
       .item {
-        padding: 20px;
-        background: linear-gradient(145deg, #ffffff, #f0f0f0);
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        border-left: 5px solid #4a90e2;
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
+        padding: 16px 20px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
         user-select: none;
+        transition: box-shadow 0.2s;
       }
 
       .item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-hover);
       }
 
       .item h3 {
-        margin-bottom: 10px;
-        color: #2c3e50;
-        font-size: 18px;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--text);
       }
 
       .item p {
-        color: #555;
-        line-height: 1.6;
-        font-size: 14px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
       }
 
-      .controls {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-      }
-
-      .control-btn {
-        padding: 8px 16px;
-        background: #4a90e2;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        transition:
-          background 0.3s,
-          transform 0.2s;
-      }
-
-      .control-btn:hover {
-        background: #357abd;
-        transform: translateY(-2px);
-      }
-
-      #content {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-      }
-
+      /* ---- Stats Bar ---- */
       .stats {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 14px;
-        color: #666;
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        padding: 10px 0 0;
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .stats span {
+        background: var(--bg);
+        padding: 4px 12px;
+        border-radius: 6px;
+      }
+
+      /* ---- Sidebar ---- */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .panel {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+
+      .panel-title {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+      }
+
+      /* ---- Buttons ---- */
+      .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          transform 0.15s;
+        color: white;
+        background: var(--primary);
+      }
+
+      .btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn--outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+      }
+
+      .btn--outline:hover {
+        background: rgba(74, 144, 226, 0.08);
+      }
+
+      .btn--danger {
+        background: #e74c3c;
+      }
+
+      .btn--danger:hover {
+        background: #c0392b;
+      }
+
+      /* ---- Form Controls ---- */
+      .form-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .form-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .form-row label {
+        font-size: 13px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        min-width: 40px;
+      }
+
+      .form-input {
+        flex: 1;
+        padding: 6px 10px;
+        font-size: 13px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.2s;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      .form-input:focus {
+        border-color: var(--primary);
+      }
+
+      textarea.form-input {
+        min-height: 80px;
+        resize: vertical;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+      }
+
+      /* ---- Toggle ---- */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .toggle-label {
+        font-size: 13px;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .toggle {
+        position: relative;
+        width: 40px;
+        height: 22px;
+      }
+
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: var(--border);
+        border-radius: 22px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+
+      .toggle input:checked + .toggle-slider {
+        background: var(--primary);
+      }
+
+      .toggle input:checked + .toggle-slider::before {
+        transform: translateX(18px);
+      }
+
+      /* ---- Event Log ---- */
+      .event-log {
+        max-height: 140px;
+        overflow-y: auto;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        background: var(--bg);
+        border-radius: 6px;
+        padding: 8px 10px;
+        color: var(--text-secondary);
+      }
+
+      .event-log:empty::before {
+        content: '暂无事件…';
+        color: var(--border);
+      }
+
+      .event-log .log-item {
+        border-bottom: 1px dashed var(--border);
+        padding: 2px 0;
+      }
+
+      .event-log .log-item:last-child {
+        border-bottom: none;
+      }
+
+      .log-tag {
+        display: inline-block;
+        padding: 0 5px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-right: 4px;
+      }
+
+      .log-tag--start {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .log-tag--move {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+
+      .log-tag--end {
+        background: #fff3e0;
+        color: #e65100;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .panel-header .panel-title {
+        margin-bottom: 0;
+      }
+
+      .btn--sm {
+        padding: 3px 8px;
+        font-size: 11px;
       }
     </style>
     <link rel="stylesheet" href="./style/css.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Transform 拖动滚动与弹性效果</h1>
-      <div class="description">使用 CSS transform 和 translate3d 实现，支持 GPU 加速，提供更流畅的滚动体验</div>
-      <div id="scrollContainer"></div>
-      <div class="stats">
-        <span id="positionInfo">位置: 0px</span> |
-        <span id="velocityInfo">速度: 0px/帧</span>
+    <!-- Header -->
+    <div class="header">
+      <h1>DragScroll</h1>
+      <p>基于 CSS transform + translate3d 的拖拽滚动组件，支持 GPU 加速、惯性滚动与弹性边界</p>
+    </div>
+
+    <!-- Playground -->
+    <div class="playground">
+      <!-- Left: Scroll Area -->
+      <div class="scroll-area">
+        <div id="scrollContainer"></div>
+        <div class="stats">
+          <span id="positionInfo">X: 0 &nbsp; Y: 0</span>
+          <span id="velocityInfo">速度: 0 px/帧</span>
+        </div>
       </div>
-      <div class="controls">
-        <button class="control-btn" id="resetBtn">重置位置</button>
-        <button class="control-btn" id="toTopBtn">滚动到顶部</button>
-        <button class="control-btn" id="toBottomBtn">滚动到底部</button>
-      </div>
-      <div>
-        <textarea id="content" rows="10" cols="50"></textarea>
-        <button class="control-btn" id="innerHtmlBtn">innerHtml</button>
-      </div>
-      <div>
-        <input type="checkbox" id="readonly" />
-        <button class="control-btn" id="readonlyBtn">readonly</button>
-      </div>
-      <div>
-        <input type="text" id="width" value="100%" />
-        <input type="text" id="height" value="400px" />
-        <button class="control-btn" id="resizeBtn">resize</button>
-      </div>
-      <div>
-        <button class="control-btn" id="destroy">销毁</button>
+
+      <!-- Right: Sidebar Controls -->
+      <div class="sidebar">
+        <!-- Scroll Controls -->
+        <div class="panel">
+          <div class="panel-title">滚动控制</div>
+          <div class="btn-group">
+            <button class="btn btn--outline" id="resetBtn">重置</button>
+            <button class="btn btn--outline" id="toTopBtn">滚动到顶部</button>
+            <button class="btn btn--outline" id="toBottomBtn">滚动到底部</button>
+          </div>
+        </div>
+
+        <!-- Resize -->
+        <div class="panel">
+          <div class="panel-title">容器尺寸</div>
+          <div class="form-row">
+            <label>宽度</label>
+            <input class="form-input" type="text" id="width" value="100%" />
+          </div>
+          <div class="form-row">
+            <label>高度</label>
+            <input class="form-input" type="text" id="height" value="400px" />
+          </div>
+          <div class="form-row" style="justify-content: flex-end">
+            <button class="btn" id="resizeBtn">应用</button>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="panel">
+          <div class="panel-title">选项</div>
+          <div class="toggle-row">
+            <span class="toggle-label">只读模式 (readonly)</span>
+            <label class="toggle">
+              <input type="checkbox" id="readonly" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="margin-top: 10px">
+            <span class="toggle-label">隐藏滚动条 (hideScrollbar)(销毁重建)</span>
+            <label class="toggle">
+              <input type="checkbox" id="hideScrollbar" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">事件回调</div>
+            <button class="btn btn--outline btn--sm" id="clearLog">清空</button>
+          </div>
+          <div class="event-log" id="eventLog"></div>
+        </div>
+
+        <!-- Custom Content -->
+        <div class="panel">
+          <div class="panel-title">自定义内容</div>
+          <textarea class="form-input" id="content" placeholder="输入 HTML 内容…"></textarea>
+          <div class="form-row" style="justify-content: flex-end; margin-top: 8px">
+            <button class="btn" id="innerHtmlBtn">更新内容</button>
+          </div>
+        </div>
+
+        <!-- Destroy -->
+        <div class="panel">
+          <div class="btn-group" style="justify-content: flex-end">
+            <button class="btn btn--danger" id="destroy">销毁实例</button>
+          </div>
+        </div>
       </div>
     </div>
+
     <script src="./index.umd.js"></script>
     <script>
-      const html = `
-                <div class="item">
-                  <h3>项目 1</h3>
-                  <p>这是第一个项目的内容。使用 transform: translate3d 实现平移，可以获得更好的性能。</p>
-                </div>
-                <div class="item" id="item_11">
-                  <h3>项目 2</h3>
-                  <p>这是第二个项目的内容。GPU 加速使滚动更加流畅，特别是在移动设备上。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 3</h3>
-                  <p>这是第三个项目的内容。弹性效果通过物理模拟实现，更加自然。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 4</h3>
-                  <p>这是第四个项目的内容。尝试快速拖动并释放，观察弹性效果。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 5</h3>
-                  <p>这是第五个项目的内容。滚动到边界时会有明显的弹性反馈。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 6</h3>
-                  <p>这是第六个项目的内容。代码使用了 requestAnimationFrame 实现流畅动画。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 7</h3>
-                  <p>这是第七个项目的内容。transform 方法避免了重排，性能更优。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 8</h3>
-                  <p>这是第八个项目的内容。弹性系数和摩擦力可以调整以获得不同效果。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 9</h3>
-                  <p>这是第九个项目的内容。尝试不同的拖动速度体验不同的弹性反馈。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 10</h3>
-                  <p>这是第十个项目的内容。这是最后一个项目，向上拖动可以回到顶部。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 11</h3>
-                  <p>额外添加的项目，用于测试更长的滚动内容。</p>
-                </div>
-                <div class="item">
-                  <h3>项目 12</h3>
-                  <p>最后一个测试项目，展示完整的滚动范围。</p>
-                </div>
-          `;
+      // Generate demo items
+      const items = [
+        { title: '项目 1', desc: '使用 transform: translate3d 实现平移，获得更好的渲染性能。' },
+        { title: '项目 2', desc: 'GPU 加速使滚动更加流畅，特别适合移动设备。' },
+        { title: '项目 3', desc: '弹性效果通过物理模拟实现，交互反馈更加自然。' },
+        { title: '项目 4', desc: '尝试快速拖动并释放，观察惯性滚动效果。' },
+        { title: '项目 5', desc: '滚动到边界时会有明显的弹性反馈。' },
+        { title: '项目 6', desc: '基于 requestAnimationFrame 实现流畅的逐帧动画。' },
+        { title: '项目 7', desc: 'transform 方法避免了 DOM 重排，性能更优。' },
+        { title: '项目 8', desc: '弹性系数、摩擦力等物理参数均可调整。' },
+        { title: '项目 9', desc: '不同拖动速度可体验不同的弹性反馈效果。' },
+        { title: '项目 10', desc: '使用 PointerEvent 统一处理鼠标与触摸事件。' },
+        { title: '项目 11', desc: '支持动态更新内容与容器尺寸。' },
+        { title: '项目 12', desc: '轻量零依赖，可在任意框架中使用。' },
+      ];
 
-      // document.getElementById('scrollContent').innerHTML = html;
+      const html = items.map(item => `<div class="item"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('\n');
+
       let dragScroll = null;
-      // 初始化拖动滚动
+
       document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('scrollContainer');
+
+        const eventLog = document.getElementById('eventLog');
+        let logCount = 0;
+        const MAX_LOG = 50;
+
+        function addLog(tag, text) {
+          if (logCount >= MAX_LOG) {
+            eventLog.removeChild(eventLog.firstChild);
+          } else {
+            logCount++;
+          }
+          const div = document.createElement('div');
+          div.className = 'log-item';
+          div.innerHTML = `<span class="log-tag log-tag--${tag}">${tag}</span>${text}`;
+          eventLog.appendChild(div);
+          eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
         dragScroll = new DragScroll(container, {
           content: html,
+          onChange: state => {
+            document.getElementById('positionInfo').textContent = `X: ${Math.round(state.x)}  Y: ${Math.round(state.y)}`;
+            document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(1)} px/帧`;
+          },
           onDragStart: e => {
-            console.log('拖拽开始', e);
+            addLog('start', `clientY: ${Math.round(e.clientY)}`);
           },
           onDragging: (x, y) => {
-            console.log('拖拽中', x, y);
+            addLog('move', `x: ${x}, y: ${Math.round(y)}`);
           },
           onDragEnd: e => {
-            console.log('拖拽结束', e);
+            addLog('end', `clientY: ${Math.round(e.clientY)}`);
           },
-          onChange: state => {
-            document.getElementById('positionInfo').textContent = `位置 X: ${Math.round(state.x)}px, Y: ${Math.round(state.y)}px`;
-            document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(2)}px/帧`;
-          },
-          // readonly: true,
-          // hideScrollbar: true,
         });
 
+        // ---- Scroll Controls ----
         document.getElementById('resetBtn').addEventListener('click', () => {
-          if (dragScroll) dragScroll.scrollToY(0);
+          dragScroll?.scrollToY(0);
         });
 
         document.getElementById('toTopBtn').addEventListener('click', () => {
-          if (dragScroll) dragScroll.scrollToY(0);
+          dragScroll?.scrollToY(0);
         });
 
         document.getElementById('toBottomBtn').addEventListener('click', () => {
-          const maxScroll = dragScroll.$content.scrollHeight - dragScroll.$container.clientHeight;
-          if (dragScroll) dragScroll.scrollToY(maxScroll);
+          if (!dragScroll) return;
+          const max = dragScroll.$content.scrollHeight - dragScroll.$container.clientHeight;
+          dragScroll.scrollToY(max);
         });
-        document.getElementById('destroy').addEventListener('click', () => {
-          if (dragScroll) dragScroll.destroy();
-        });
-        document.getElementById('innerHtmlBtn').addEventListener('click', () => {
-          const content = document.getElementById('content').value;
-          if (dragScroll) dragScroll.innerHtml(content);
-        });
-        document.getElementById('readonlyBtn').addEventListener('click', () => {
-          /** @type {boolean} */
-          const readonly = document.getElementById('readonly').checked;
-          if (dragScroll) dragScroll.readonly = readonly;
-        });
+
+        // ---- Resize ----
         document.getElementById('resizeBtn').addEventListener('click', () => {
-          /** @type {boolean} */
-          const width = document.getElementById('width').value;
-          const height = document.getElementById('height').value;
-          if (dragScroll) dragScroll.resize(width, height);
+          if (!dragScroll) return;
+          const w = document.getElementById('width').value;
+          const h = document.getElementById('height').value;
+          dragScroll.resize(w, h);
+        });
+
+        // ---- Readonly Toggle ----
+        document.getElementById('readonly').addEventListener('change', e => {
+          if (dragScroll) dragScroll.readonly = e.target.checked;
+        });
+
+        // ---- HideScrollbar Toggle ----
+        document.getElementById('hideScrollbar').addEventListener('change', e => {
+          if (!dragScroll) return;
+          // Recreate instance with new hideScrollbar option
+          const currentY = dragScroll.currentY;
+          dragScroll.destroy();
+          dragScroll = new DragScroll(container, {
+            content: html,
+            hideScrollbar: e.target.checked,
+            readonly: document.getElementById('readonly').checked,
+            onChange: state => {
+              document.getElementById('positionInfo').textContent = `X: ${Math.round(state.x)}  Y: ${Math.round(state.y)}`;
+              document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(1)} px/帧`;
+            },
+            onDragStart: ev => addLog('start', `clientY: ${Math.round(ev.clientY)}`),
+            onDragging: (x, y) => addLog('move', `x: ${x}, y: ${Math.round(y)}`),
+            onDragEnd: ev => addLog('end', `clientY: ${Math.round(ev.clientY)}`),
+          });
+          dragScroll.scrollToY(currentY, false);
+        });
+
+        // ---- Clear Event Log ----
+        document.getElementById('clearLog').addEventListener('click', () => {
+          eventLog.innerHTML = '';
+          logCount = 0;
+        });
+
+        // ---- Custom Content ----
+        document.getElementById('innerHtmlBtn').addEventListener('click', () => {
+          const val = document.getElementById('content').value;
+          dragScroll?.innerHtml(val);
+        });
+
+        // ---- Destroy ----
+        document.getElementById('destroy').addEventListener('click', () => {
+          if (!dragScroll) return;
+          dragScroll.destroy();
+          dragScroll = null;
         });
 
         dragScroll.innerHtml(html);

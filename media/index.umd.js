@@ -1,8 +1,8 @@
 /**
  * drag scroll support move and touch
  *
- * @skax/drag-scroll v1.1.2
- * Copyright (c) 2026-01-11 ShineShao <xiaoshaoqq@gmail.com>
+ * @skax/drag-scroll v2.0.0
+ * Copyright (c) 2026-02-26 ShineShao <xiaoshaoqq@gmail.com>
  * 
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,7 @@
           /** 滚动条指示器元素 */ this._$scrollbarThumb = null;
           /** 是否只读 */ this._readonly = false;
           if (!container) {
-              throw new Error('container is required');
+              throw new Error('container is required!');
           }
           if ([
               'VIDEO',
@@ -186,9 +186,9 @@
       // ---------------------------------------------------------------------- //
       _proto._renderScrollbar = function _renderScrollbar() {
           this._$scrollbar = document.createElement('div');
-          this._$scrollbar.className = "" + _$DRAG_SCROLL_PREFIX_CLASSNAME$_ + "-scrollbar";
+          this._$scrollbar.className = "" + _$DRAG_SCROLL_PREFIX_CLASSNAME$_ + "-bar";
           this._$scrollbarThumb = document.createElement('div');
-          this._$scrollbarThumb.className = "" + _$DRAG_SCROLL_PREFIX_CLASSNAME$_ + "-scrollbar-thumb";
+          this._$scrollbarThumb.className = "" + _$DRAG_SCROLL_PREFIX_CLASSNAME$_ + "-bar-thumb";
           this._$scrollbar.appendChild(this._$scrollbarThumb);
           this.$container.appendChild(this._$scrollbar);
       };
