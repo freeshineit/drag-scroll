@@ -734,10 +734,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@skax/drag-scroll@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@skax/drag-scroll/-/drag-scroll-1.1.1.tgz#1bf08ba408649892c991ebaa640dba43c1a99f81"
-  integrity sha512-c6FOGohw3FH2UO2rNtQfGQbCBpbIqMQSALsc+KaMdB7RJ0ySHPSrseL0xXpfso/m76BgIl3kmtVLgddEERguUw==
+"@skax/drag-scroll@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@skax/drag-scroll/-/drag-scroll-2.0.0.tgz#aa095c71c9fa464386e42192290cafc67e45bff0"
+  integrity sha512-9mwu+g8sXJYbSYOyRLZ3/AEpima4L+uSfQ4TZCa74zykCvxbnfYorzK95+WV/0Bd0p0Vfi19VtYX4180qdPH6A==
 
 "@soda/friendly-errors-webpack-plugin@^1.7.1":
   version "1.8.1"

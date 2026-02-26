@@ -10,7 +10,7 @@
     "react-dom": "^19.2.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
-    "@skax/drag-scroll": "1.1.1"
+    "@skax/drag-scroll": "2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -9,7 +9,7 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "@skax/drag-scroll": "1.1.1",
+    "@skax/drag-scroll": "2.0.0",
     "vue": "^2.5.17"
   },
   "devDependencies": {
