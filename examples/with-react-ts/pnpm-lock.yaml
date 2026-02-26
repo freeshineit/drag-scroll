@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@skax/drag-scroll':
-    specifier: 1.1.1
-    version: 1.1.1
+    specifier: 2.0.0
+    version: 2.0.0
   '@types/node':
     specifier: ^16.18.126
     version: 16.18.126
@@ -2197,8 +2197,8 @@ packages:
       '@sinonjs/commons': 1.8.6
     dev: false
 
-  /@skax/drag-scroll@1.1.1:
-    resolution: {integrity: sha512-c6FOGohw3FH2UO2rNtQfGQbCBpbIqMQSALsc+KaMdB7RJ0ySHPSrseL0xXpfso/m76BgIl3kmtVLgddEERguUw==}
+  /@skax/drag-scroll@2.0.0:
+    resolution: {integrity: sha512-9mwu+g8sXJYbSYOyRLZ3/AEpima4L+uSfQ4TZCa74zykCvxbnfYorzK95+WV/0Bd0p0Vfi19VtYX4180qdPH6A==}
     dev: false
 
   /@surma/rollup-plugin-off-main-thread@2.2.3:
