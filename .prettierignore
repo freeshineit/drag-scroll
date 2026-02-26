@@ -7,3 +7,5 @@ docs/
 build/
 coverage/
 pnpm-lock.yaml
+examples/with-base/style
+examples/with-base/index.umd.js
