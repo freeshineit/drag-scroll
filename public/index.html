@@ -289,6 +289,73 @@
       .toggle input:checked + .toggle-slider::before {
         transform: translateX(18px);
       }
+
+      /* ---- Event Log ---- */
+      .event-log {
+        max-height: 140px;
+        overflow-y: auto;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        background: var(--bg);
+        border-radius: 6px;
+        padding: 8px 10px;
+        color: var(--text-secondary);
+      }
+
+      .event-log:empty::before {
+        content: '暂无事件…';
+        color: var(--border);
+      }
+
+      .event-log .log-item {
+        border-bottom: 1px dashed var(--border);
+        padding: 2px 0;
+      }
+
+      .event-log .log-item:last-child {
+        border-bottom: none;
+      }
+
+      .log-tag {
+        display: inline-block;
+        padding: 0 5px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-right: 4px;
+      }
+
+      .log-tag--start {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .log-tag--move {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+
+      .log-tag--end {
+        background: #fff3e0;
+        color: #e65100;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .panel-header .panel-title {
+        margin-bottom: 0;
+      }
+
+      .btn--sm {
+        padding: 3px 8px;
+        font-size: 11px;
+      }
     </style>
     <link rel="stylesheet" href="./style/css.css" />
   </head>
@@ -342,12 +409,28 @@
         <div class="panel">
           <div class="panel-title">选项</div>
           <div class="toggle-row">
-            <span class="toggle-label">只读模式</span>
+            <span class="toggle-label">只读模式 (readonly)</span>
             <label class="toggle">
               <input type="checkbox" id="readonly" />
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div class="toggle-row" style="margin-top: 10px">
+            <span class="toggle-label">隐藏滚动条 (hideScrollbar)(销毁重建)</span>
+            <label class="toggle">
+              <input type="checkbox" id="hideScrollbar" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">事件回调</div>
+            <button class="btn btn--outline btn--sm" id="clearLog">清空</button>
+          </div>
+          <div class="event-log" id="eventLog"></div>
         </div>
 
         <!-- Custom Content -->
@@ -393,11 +476,37 @@
       document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('scrollContainer');
 
+        const eventLog = document.getElementById('eventLog');
+        let logCount = 0;
+        const MAX_LOG = 50;
+
+        function addLog(tag, text) {
+          if (logCount >= MAX_LOG) {
+            eventLog.removeChild(eventLog.firstChild);
+          } else {
+            logCount++;
+          }
+          const div = document.createElement('div');
+          div.className = 'log-item';
+          div.innerHTML = `<span class="log-tag log-tag--${tag}">${tag}</span>${text}`;
+          eventLog.appendChild(div);
+          eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
         dragScroll = new DragScroll(container, {
           content: html,
           onChange: state => {
             document.getElementById('positionInfo').textContent = `X: ${Math.round(state.x)}  Y: ${Math.round(state.y)}`;
             document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(1)} px/帧`;
+          },
+          onDragStart: e => {
+            addLog('start', `clientY: ${Math.round(e.clientY)}`);
+          },
+          onDragging: (x, y) => {
+            addLog('move', `x: ${x}, y: ${Math.round(y)}`);
+          },
+          onDragEnd: e => {
+            addLog('end', `clientY: ${Math.round(e.clientY)}`);
           },
         });
 
@@ -427,6 +536,33 @@
         // ---- Readonly Toggle ----
         document.getElementById('readonly').addEventListener('change', e => {
           if (dragScroll) dragScroll.readonly = e.target.checked;
+        });
+
+        // ---- HideScrollbar Toggle ----
+        document.getElementById('hideScrollbar').addEventListener('change', e => {
+          if (!dragScroll) return;
+          // Recreate instance with new hideScrollbar option
+          const currentY = dragScroll.currentY;
+          dragScroll.destroy();
+          dragScroll = new DragScroll(container, {
+            content: html,
+            hideScrollbar: e.target.checked,
+            readonly: document.getElementById('readonly').checked,
+            onChange: state => {
+              document.getElementById('positionInfo').textContent = `X: ${Math.round(state.x)}  Y: ${Math.round(state.y)}`;
+              document.getElementById('velocityInfo').textContent = `速度: ${state.velocity.toFixed(1)} px/帧`;
+            },
+            onDragStart: ev => addLog('start', `clientY: ${Math.round(ev.clientY)}`),
+            onDragging: (x, y) => addLog('move', `x: ${x}, y: ${Math.round(y)}`),
+            onDragEnd: ev => addLog('end', `clientY: ${Math.round(ev.clientY)}`),
+          });
+          dragScroll.scrollToY(currentY, false);
+        });
+
+        // ---- Clear Event Log ----
+        document.getElementById('clearLog').addEventListener('click', () => {
+          eventLog.innerHTML = '';
+          logCount = 0;
         });
 
         // ---- Custom Content ----
