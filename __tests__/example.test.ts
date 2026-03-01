@@ -59,7 +59,7 @@ describe('DragScroll 示例测试', () => {
       expect.objectContaining({
         y: 100,
         velocity: expect.any(Number),
-      })
+      }),
     );
 
     dragScroll.destroy();
