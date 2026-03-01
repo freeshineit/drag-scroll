@@ -66,8 +66,8 @@ devDependencies:
     specifier: ^9.38.0
     version: 9.38.0
   eslint-config-xx:
-    specifier: 2.0.0-beta.1
-    version: 2.0.0-beta.1
+    specifier: 2.1.0
+    version: 2.1.0
   jest:
     specifier: ^30.2.0
     version: 30.2.0
@@ -4311,8 +4311,8 @@ packages:
       eslint: 9.38.0
     dev: true
 
-  /eslint-config-xx@2.0.0-beta.1:
-    resolution: {integrity: sha512-90XB1q/oaQN6rgXk0uG2m80Bi7t1xkoa/yvI5eIKVY9+AP/Zed37rkFVGkby/cNrWW5v8PkpPdeMVuD5TF0F7g==}
+  /eslint-config-xx@2.1.0:
+    resolution: {integrity: sha512-iSYa58IxcRZAhZDxZ4wVLo0oGZVOc7X45biF/qIAPnLW8VBJrnXxb1WGFN4gvUchNwCihnxyQ5olO+BaZeV3Mg==}
     engines: {node: '>=18'}
     dependencies:
       '@eslint/js': 9.38.0
